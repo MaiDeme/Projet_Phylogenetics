@@ -2,7 +2,7 @@
            Master BIBS
      Universite Paris-Saclay
    Projet MiniInfo 1 2023-2024
-
+ 
 Sujet propose par George Marchment
       george.marchment@lisn.fr
 ----------------------------------*/
@@ -90,7 +90,9 @@ Output : None
 Main : Effectue l'affichage de la sequence
 */
 void affiche_sequence(Sequence* sequence) {
-    //TODO
+    printf("\t* ID : %s\n",sequence->ID);
+    printf("\t* Sequence : %s\n",sequence->seq);
+    //DONE
 }
 
 
@@ -158,7 +160,39 @@ Main : Fonction qui prend le code ainsi qu'une position start, elle va chercher 
        sequence elle retourne -1 
 */
 int extract_next_sequence(char* code, int start, Sequence* sequence) {
-    //TODO
+    char seq[seq_MAX_LENGTH];
+    set_empty_string(seq);
+    char ID[ID_MAX_LENGTH];
+    set_empty_string(ID);
+    int i=start;
+
+    //on trouve le > du fasta
+    while (code[i]!='>'){
+        i++;
+    }
+    i++;
+    //tant qu'on est sur la ligne du > on avance dans les i
+    while(code[i]!='\n'){
+        appendString(ID,code[i]);
+        i++;
+    }
+    i++;
+
+    while (code[i]!='>' && code[i]!='\0'){
+        if (code[i]!='\n'){
+            appendString(seq,code[i]);
+
+        }
+        i++;
+    }
+    set_sequence(sequence,ID,seq);
+
+    if (code[i]=='\0'){
+        return -1;
+    }else{
+        return i-1;
+    }
+    //DONE
 }
 
 /*
@@ -167,7 +201,15 @@ Output : None
 Main : Fonction qui lit un fichier, remplit la liste avec les sequences trouvees dans le fichier
 */
 void parse_file(char* address, Sequence tab_sequences[]) {
+    char *data=readFile(address);
+    int nseq_=get_number_entries(address);
+    int start=0;
+
+    for (int i=0;i<nseq_;i++){
+        start=extract_next_sequence(data,start,&tab_sequences[i]);
+    }
     //TODO
+
 }
 
 /*
@@ -180,6 +222,7 @@ void show_sequences_file(char* file){
     int nb_entries = get_number_entries(file);
     printf("Nombre d'entrees : %d\n", nb_entries);
     printf("\n");
+    
     Sequence tab_sequences[nb_entries];
     parse_file(file, tab_sequences);
 
