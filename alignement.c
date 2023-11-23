@@ -26,6 +26,26 @@ Output : Un entier
 Main : Fonction qui prend un caractere et retourne l'index correspondant (voir l'enum Base_Azotee)
 */
 int get_val_base(char a) {
+    enum Base_Azotee base;
+    switch (a)
+    {
+    case 'A':
+        base=A;
+        break;
+    case 'C':
+        base=C;
+        break;
+    case 'G':
+        base=G;
+        break;
+    case 'T':
+        base =T;
+        break;
+    case '-':
+        base=E;
+        break;
+    }
+    return base;
     //TODO
 }
 
@@ -36,6 +56,9 @@ Main : Fonction qui prend en entier 2 caracteres et qui retourne
        le score entre les 2 caracteres suivant la matrice de similarite
 */
 int similarity_score(char ch1, char ch2) {
+    int i1=get_val_base(ch1);
+    int i2=get_val_base(ch2);
+    return similarity_matrix[i1][i2];
     //TODO
 }
 
@@ -46,6 +69,11 @@ Main : Fonction qui prend en entier 2 chaînes de caracteres et qui retourne
        le score d'alignement entre les deux chaînes
 */
 int score_alignement(char* alignement1, char* alignement2) {
+    int score=0;
+    for (int i=0;alignement1[i]!='\0';i++){
+        score+=similarity_score(alignement1[i],alignement2[i]);
+    }
+    return score;
     //TODO
 }
 
@@ -56,6 +84,10 @@ Main : Procedure qui prend en entier 2 chaînes de caracteres et un score
        Et qui fait un bel affichage montrant l'alignement et le score
 */
 void print_quality_alignement(char* ali1, char* ali2, int score) {
+    printf("Le score d'alignement : %d\n",score);
+    printf("\t%s\n",ali1);
+    printf("\t%s\n",ali2);
+
     //TODO
 }
 
