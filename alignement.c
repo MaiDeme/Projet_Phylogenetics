@@ -10,11 +10,10 @@ Sujet propose par George Marchment
 #include "utils.h"
 
 const int similarity_matrix[NB_BASE][NB_BASE] = {{10, -1, -3, -4, -5},
-                                                 {-1,  7, -5, -3, -5},
-                                                 {-3, -5,  9,  0, -5},
-                                                 {-4, -3,  0,  8, -5},
-                                                 {-5, -5, -5, -5,  0}};
-
+                                                 {-1, 7, -5, -3, -5},
+                                                 {-3, -5, 9, 0, -5},
+                                                 {-4, -3, 0, 8, -5},
+                                                 {-5, -5, -5, -5, 0}};
 
 /*----------------------------------------------------------------------------------
 Fonctions permettant de calculer le score d'alignement entre 2 chaînes de caracteres
@@ -25,56 +24,60 @@ Input : Un caractere
 Output : Un entier
 Main : Fonction qui prend un caractere et retourne l'index correspondant (voir l'enum Base_Azotee)
 */
-int get_val_base(char a) {
+int get_val_base(char a)
+{
     enum Base_Azotee base;
     switch (a)
     {
     case 'A':
-        base=A;
+        base = A;
         break;
     case 'C':
-        base=C;
+        base = C;
         break;
     case 'G':
-        base=G;
+        base = G;
         break;
     case 'T':
-        base =T;
+        base = T;
         break;
     case '-':
-        base=E;
+        base = E;
         break;
     }
     return base;
-    //TODO
+    // TODO
 }
 
 /*
-Input : Deux caracteres 
+Input : Deux caracteres
 Output : Un entier
-Main : Fonction qui prend en entier 2 caracteres et qui retourne 
+Main : Fonction qui prend en entier 2 caracteres et qui retourne
        le score entre les 2 caracteres suivant la matrice de similarite
 */
-int similarity_score(char ch1, char ch2) {
-    int i1=get_val_base(ch1);
-    int i2=get_val_base(ch2);
+int similarity_score(char ch1, char ch2)
+{
+    int i1 = get_val_base(ch1);
+    int i2 = get_val_base(ch2);
     return similarity_matrix[i1][i2];
-    //TODO
+    // TODO
 }
 
 /*
 Input : Deux chaînes de caracteres s
 Output : Un entier
-Main : Fonction qui prend en entier 2 chaînes de caracteres et qui retourne 
+Main : Fonction qui prend en entier 2 chaînes de caracteres et qui retourne
        le score d'alignement entre les deux chaînes
 */
-int score_alignement(char* alignement1, char* alignement2) {
-    int score=0;
-    for (int i=0;alignement1[i]!='\0';i++){
-        score+=similarity_score(alignement1[i],alignement2[i]);
+int score_alignement(char *alignement1, char *alignement2)
+{
+    int score = 0;
+    for (int i = 0; alignement1[i] != '\0'; i++)
+    {
+        score += similarity_score(alignement1[i], alignement2[i]);
     }
     return score;
-    //TODO
+    // TODO
 }
 
 /*
@@ -83,12 +86,12 @@ Output : None
 Main : Procedure qui prend en entier 2 chaînes de caracteres et un score
        Et qui fait un bel affichage montrant l'alignement et le score
 */
-void print_quality_alignement(char* ali1, char* ali2, int score) {
-    printf("Le score d'alignement : %d\n",score);
-    printf("\t%s\n",ali1);
-    printf("\t%s\n",ali2);
-
-    //TODO
+void print_quality_alignement(char *ali1, char *ali2, int score)
+{
+    printf("Le score d'alignement : %d\n", score);
+    printf("\t%s\n", ali1);
+    printf("\t%s\n", ali2);
+    // TODO
 }
 
 /*----------------------------
@@ -100,8 +103,12 @@ Input : 2 entiers et une matrice
 Output : None
 Main : Procedure qui Initialise la matrice M
 */
-void initialise_M(int n, int m, int M[][m]) {
-    //TODO
+void initialise_M(int n, int m, int M[][m])
+{
+    for (int i = 0; i < n; i++)
+    {
+    }
+    // TODO
 }
 
 /*
@@ -109,8 +116,9 @@ Input : 2 entiers et une matrice
 Output : None
 Main : Procedure qui Initialise la matrice T
 */
-void initialise_T(int n, int m, char T[][m]) {
-    //TODO
+void initialise_T(int n, int m, char T[][m])
+{
+    // TODO
 }
 
 /*
@@ -118,11 +126,14 @@ Input : un entier
 Output : un caractere
 Main : Fonction qui retourne le caractere correspondant au maximum index de la formule Mij
 */
-char symbole(int entier) {
-    if (entier == 0) {
+char symbole(int entier)
+{
+    if (entier == 0)
+    {
         return 'd';
     }
-    else if (entier == 1) {
+    else if (entier == 1)
+    {
         return 'l';
     }
     return 'u';
@@ -133,8 +144,9 @@ Input : une chaîne de caracteres
 Output : None
 Main : Procedure qui inverse une chaîne de caracteres
 */
-void reverse_string(char* str) {
-    //TODO
+void reverse_string(char *str)
+{
+    // TODO
 }
 
 /*
@@ -144,12 +156,13 @@ Input : - 2 Sequences
         - une matrice de taille n*m
         - Deux pointeurs sur des entiers
 Output : None
-Main : Procedure qui applique la formule Mij et qui sauvegarde 
+Main : Procedure qui applique la formule Mij et qui sauvegarde
        la plus grande valeur dans le premier pointeur et l'index
        correspondant (0, 1 ou 2) dans le deuxieme.
 */
-void fonction_Mij(Sequence* s1, Sequence* s2, int i, int j, int n, int m, int M[][m], int* max, int* index) {
-    //TODO
+void fonction_Mij(Sequence *s1, Sequence *s2, int i, int j, int n, int m, int M[][m], int *max, int *index)
+{
+    // TODO
 }
 
 /*
@@ -160,13 +173,7 @@ Main : Procedure qui applique l'algorithme Needleman-Wunsch
        sur les 2 sequences et qui sauvegarde les alignements
        dans les 2 pointeurs
 */
-void needleman_wunsch(Sequence seq1, Sequence seq2, char* alignement1, char* alignement2) {
-    //TODO
+void needleman_wunsch(Sequence seq1, Sequence seq2, char *alignement1, char *alignement2)
+{
+    // TODO
 }
-
-
-
-
-
-
-
