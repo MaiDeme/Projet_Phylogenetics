@@ -8,6 +8,7 @@ Sujet propose par George Marchment
 ----------------------------------*/
 
 #include "utils.h"
+#include <math.h>
 
 /*
 Input : Deux Sequences
@@ -15,7 +16,18 @@ Output : Float
 Main : Fonction qui retourne la distance entre deux sequences 
 */
 float distance(Sequence seq1, Sequence seq2) {
-    //TODO
+    float nb_substitution=0.;
+    float nb_nucleotide=0.;
+    for (int i=0; seq1.seq[i]!='\0';i++){
+        if (seq1.seq[i]!='-' && seq2.seq[i]!='-'){
+            nb_nucleotide++;
+            if(seq1.seq[i]!=seq2.seq[i]){
+                nb_substitution++;
+            }
+        }
+    }
+
+    return nb_substitution/nb_nucleotide;
 }
 
 /*
@@ -24,7 +36,7 @@ Output : Float
 Main : Fonction qui applique la correction de Jukes-Cantor
 */
 float jukes_cantor(float x) {
-    //TODO
+    return -(3./4)*logf(1-(4./3)*x);
 }
 
 /*-------------------------------------------------
@@ -37,7 +49,12 @@ Output : None
 Main : Procedure qui initialise une matrice à une matrice nulle
 */
 void initialise_matrice(int entries, float matrice_distance[][entries]) {
-    //TODO
+    for (int i=0;i<entries;i++){
+        for (int j=0;j<entries;j++){
+            matrice_distance[i][j]=0.;
+        }
+
+    }
 }
 
 /*
@@ -46,7 +63,17 @@ Output : None
 Main : Procedure qui print une matrice
 */
 void print_matrix_float(int n, int m, float matrix[][m]) {
-    //TODO
+    for (int i=0;i<n;i++){
+        for (int j=0;j<m;j++){
+            if (j>=i){
+                printf(".        ");
+            }else{
+                printf("%f ",matrix[i][j]);
+            }
+        }
+        printf("\n");
+
+    }
 }
 
 /*
@@ -55,7 +82,12 @@ Output : None
 Main : Procedure qui remplit la matrice avec la distance entre les sequences
 */
 void fill_distance_matrix(int entries, float matrice_distance[][entries], Sequence sequences[]) {
-    //TODO
+    for (int i=0;i<entries;i++){
+        for (int j=0;j<entries;j++){
+            matrice_distance[i][j]=jukes_cantor(distance(sequences[i],sequences[j]));;
+        }
+
+    }
 }
 
 /*

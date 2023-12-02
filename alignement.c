@@ -9,11 +9,12 @@ Sujet propose par George Marchment
 
 #include "utils.h"
 
-const int similarity_matrix[NB_BASE][NB_BASE] = {{10, -1, -3, -4, -5},
-                                                 {-1, 7, -5, -3, -5},
-                                                 {-3, -5, 9, 0, -5},
-                                                 {-4, -3, 0, 8, -5},
-                                                 {-5, -5, -5, -5, 0}};
+const int GAP = -5;
+const int similarity_matrix[NB_BASE][NB_BASE] = {{10, -1, -3, -4, GAP},
+                                                 {-1, 7, -5, -3, GAP},
+                                                 {-3, -5, 9, 0, GAP},
+                                                 {-4, -3, 0, 8, GAP},
+                                                 {GAP, GAP, GAP, GAP, 0}};
 
 /*----------------------------------------------------------------------------------
 Fonctions permettant de calculer le score d'alignement entre 2 chaînes de caracteres
@@ -26,26 +27,26 @@ Main : Fonction qui prend un caractere et retourne l'index correspondant (voir l
 */
 int get_val_base(char a)
 {
-    enum Base_Azotee base;
+    int index;
     switch (a)
     {
     case 'A':
-        base = A;
+        index = 0;
         break;
     case 'C':
-        base = C;
+        index = 1;
         break;
     case 'G':
-        base = G;
+        index = 2;
         break;
     case 'T':
-        base = T;
+        index = 3;
         break;
     case '-':
-        base = E;
+        index = 4;
         break;
     }
-    return base;
+    return index;
     // TODO
 }
 
@@ -105,9 +106,16 @@ Main : Procedure qui Initialise la matrice M
 */
 void initialise_M(int n, int m, int M[][m])
 {
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i <n; i++)
     {
+        M[i][0] =GAP*i;
     }
+
+    for (int j = 0; j <m; j++)
+    {
+        M[0][j] =GAP*j ;
+    }
+
     // TODO
 }
 
@@ -118,7 +126,17 @@ Main : Procedure qui Initialise la matrice T
 */
 void initialise_T(int n, int m, char T[][m])
 {
-    // TODO
+    for (int i = 0; i <n; i++)
+    {
+        T[i][0] = 'u';
+    }
+
+    for (int j = 0; j <m; j++)
+    {
+        T[0][j] = 'l';
+    }
+
+    T[0][0] = 'o';
 }
 
 /*
@@ -146,7 +164,13 @@ Main : Procedure qui inverse une chaîne de caracteres
 */
 void reverse_string(char *str)
 {
-    // TODO
+    for (int i = 0; i < (strlen(str)-1)/2; i++)
+    {
+        int j = strlen(str) - 1 - i;
+        char _ = str[j];
+        str[j] = str[i];
+        str[i] = _;
+    }
 }
 
 /*
@@ -162,7 +186,22 @@ Main : Procedure qui applique la formule Mij et qui sauvegarde
 */
 void fonction_Mij(Sequence *s1, Sequence *s2, int i, int j, int n, int m, int M[][m], int *max, int *index)
 {
-    // TODO
+    int diag = M[i - 1][j - 1] + similarity_score(s1->seq[i-1], s2->seq[j-1]);
+    int left = M[i][j - 1] + similarity_score(s1->seq[i-1], '-');
+    int up = M[i - 1][j] + similarity_score(s2->seq[j-1], '-');
+    *max = diag;
+    *index = 0;
+
+    if (*max <= left)
+    {
+        *max = left;
+        *index = 1;
+    }
+    if (*max <= up)
+    {
+        *max = up;
+        *index = 2;
+    }
 }
 
 /*
@@ -175,5 +214,57 @@ Main : Procedure qui applique l'algorithme Needleman-Wunsch
 */
 void needleman_wunsch(Sequence seq1, Sequence seq2, char *alignement1, char *alignement2)
 {
-    // TODO
+    // on declare et initialise les matrices M et T
+    int n = strlen(seq1.seq);
+    int m = strlen(seq2.seq);
+    int M[n+1][m+1];
+    initialise_M(n+1, m+1, M);
+    char T[n+1][m+1];
+    initialise_T(n+1, m+1, T);
+    int max=0;
+    int index=0;
+    for (int i = 1; i < n+1; i++)
+    {
+        for (int j = 1; j < m+1; j++)
+        {
+
+            fonction_Mij(&seq1, &seq2, i, j, n+1, m+1, M, &max, &index);
+            M[i][j] = max;
+            T[i][j] = symbole(index);
+        }
+    }
+    int score = M[n][m];
+    int i = n;
+    int j = m;
+    while (T[i][j] != 'o')
+    {
+        if (T[i][j] == 'd')
+        {
+            appendString(alignement1,seq1.seq[i-1]);
+            appendString(alignement2,seq2.seq[j-1]);
+
+            i--;
+            j--;
+        }
+        else
+        {
+            if (T[i][j] == 'l')
+            {
+                appendString(alignement1, '-');
+                appendString(alignement2,seq2.seq[j-1]);
+                j--;
+            }
+            else
+            {
+                appendString(alignement1, seq1.seq[i-1]);
+                appendString(alignement2,'-');
+                i--;
+            }
+        }
+
+    }
+
+    reverse_string(alignement1);
+    reverse_string(alignement2);
+      // TODO
 }
