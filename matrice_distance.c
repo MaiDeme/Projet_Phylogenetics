@@ -26,7 +26,6 @@ float distance(Sequence seq1, Sequence seq2) {
             }
         }
     }
-
     return nb_substitution/nb_nucleotide;
 }
 
@@ -86,9 +85,9 @@ void fill_distance_matrix(int entries, float matrice_distance[][entries], Sequen
         for (int j=0;j<entries;j++){
             matrice_distance[i][j]=jukes_cantor(distance(sequences[i],sequences[j]));;
         }
-
     }
 }
+
 
 /*
 Input : Un fichier
