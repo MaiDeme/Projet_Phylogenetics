@@ -72,7 +72,8 @@ void find_min_index_distance_matrix(int entries, int nb_noeud, float matrice_dis
             }
         }
     }
-    // TODO
+    printf("\n");
+    printf("find min index i: %d, j: %d\n", *i_min, *j_min);
 }
 
 /*--------------------------------
@@ -143,10 +144,36 @@ Main : procedure qui affiche un arbre
 */
 void new_affichage(Arbre *a)
 {
-    // fonction recursive TODO
     Noeud *e = a->tete;
-
     printf("\n");
+    //fonction qui affiche les elements
+    afficher_elem(e,0);
+    printf("\n");
+}
+
+void indentation (profondeur){
+    for (int i=0;i<profondeur;i++){
+        printf("   ");
+    }
+}
+
+void afficher_elem(Noeud *e, int profondeur){
+    if (e == NULL)
+        return;
+
+    if (est_feuille(e)){
+        indentation(profondeur);
+        printf("|--- %s\n", e->valeur);
+    }else{
+        afficher_elem(e->suivant_left,profondeur+1);
+        indentation(profondeur+1);
+        printf("|\n");
+        indentation(profondeur);
+        printf("---|\n");
+        indentation(profondeur+1);
+        printf("|\n");
+        afficher_elem(e->suivant_right,profondeur+1);
+    }
 }
 
 /*
@@ -260,16 +287,31 @@ List_Noeuds *group_together(List_Noeuds *list_param, int i, int j)
     n->suivant_left = create_copy(get_noeud_from_list(list_param, i));
     n->suivant_right = create_copy(get_noeud_from_list(list_param, j));
     n->nb_noeud = 2;
+    
+    List_Noeuds *list = (List_Noeuds *)malloc(sizeof(List_Noeuds));  
+    Element *new_e = (Element *)malloc(sizeof(Element));
+    new_e->next = NULL;
+    new_e->data = n;
+    list->head = new_e;
+    list->nb_elements = 1;
 
+    for (int temp = 0; temp < list_param->nb_elements ; temp++) {
+        if (temp != i && temp != j) {
+            Noeud* _ = get_noeud_from_list(list_param, temp);
+            Noeud* __ = create_copy(_);
+            add_Noeud(list, __);
+        }
+    }
+    return list;
+}
 
+/*
     //copie de la liste d'avant
     List_Noeuds list_copy=*list_param;
 
     // Nouvelle liste
     
     List_Noeuds new_list={.head=&(Element){.next=NULL,.data=n},.nb_elements=1};
-
-   
     // on concatene avec l'ancienne liste
     int r = 0;
     while (r < list_param->nb_elements)
@@ -280,8 +322,10 @@ List_Noeuds *group_together(List_Noeuds *list_param, int i, int j)
         }
         r++;
     }
+    printf("group together end\n");
     return &new_list;
 }
+*/
 
 /*------------------
 Fonctions pour UPGMA
@@ -300,10 +344,9 @@ float calcule_new_cell(int entries, List_Noeuds *list, float matrice_distance[][
     // TODO
     int ni = get_noeud_from_list(list, i)->nb_noeud;
     int nj = get_noeud_from_list(list, j)->nb_noeud;
-
-    float s1 = matrice_distance[i][k] * ni / (ni + nj);
-    float s2 = matrice_distance[j][k] * nj / (ni + nj);
-    return s1 + s2;
+    float s1 = matrice_distance[i][k] * ni;
+    float s2 = matrice_distance[j][k] * nj;
+    return (s1 + s2)/ (ni + nj);
 }
 
 /*
@@ -316,7 +359,6 @@ Main : Fonction qui effectue une etape de l'algorithme de UPGMA et qui retourne 
 */
 List_Noeuds *fuse_matrice_upgma(int entries, List_Noeuds *list, float matrice_distance[][entries])
 {
-    // TODO
     float min;
     int i_min, j_min;
     int nb_noeuds = get_nb_noeuds(list);
@@ -325,46 +367,28 @@ List_Noeuds *fuse_matrice_upgma(int entries, List_Noeuds *list, float matrice_di
 
     float new_matrix[nb_noeuds][nb_noeuds];
     set_copy(nb_noeuds, new_matrix, matrice_distance);
-
-    for (int i = 1, s = 1; i < nb_noeuds; i++)
-    {
-        for (int j = 0, t = 0; j < i; j++)
-        {
-            if (j == 0)
-            {
-                //on remplie la première
-                new_matrix[i][0] = calcule_new_cell(entries, list, matrice_distance, i_min, j_min, j);
+    int s = 0; //compteur pour les lignes de l'ancienne matrice
+    for (int i = 0; i < nb_noeuds; i++) {
+        int t = 0; //compteur pour les colonnes de l'ancienne matrice
+        for (int j = 0; j < i; j++) {
+            while(t==j_min || t==i_min){ 
+                t++;
             }
-            else
-            {
-                if (i < i_min && j < j_min)
-                {
-                    // tant qu'on a pas attend les lignes des se qui sont mainetnna groupées
-                    //  on peut recopier sans s'occuper des indices
-                    new_matrix[i][j] = matrice_distance[i - 1][j - 1];
-                }
-                else
-                {
-                    if (i == i_min)
-                    {
-                        s++;
-                    }
-
-                    if (j == j_min)
-                    {
-                        t++;
-                    }
-                }
-                new_matrix[i][j] = matrice_distance[s][t];
+            while(s==i_min || s==j_min){
+                s++;
             }
+
+            if (j==0){
+                new_matrix[i][0] = calcule_new_cell(entries, list, matrice_distance, i_min, j_min, s);
+            }
+            new_matrix[i][j] = matrice_distance[s][t];
             t++;
         }
         s++;
     }
 
     // on copie dans l'ancienne matrice pour gerer les pointeurs
-    set_copy(nb_noeuds, matrice_distance, new_matrix);
-
+    print_matrix_float(nb_noeuds,nb_noeuds,new_matrix);
     return group_together(list, i_min, j_min);
 }
 
@@ -377,14 +401,12 @@ Main : Fonction qui effectue l'algorithme de UPGMA et qui retourne un arbre
 */
 Arbre UPGMA(int entries, List_Noeuds *list, float matrice_distance[][entries])
 {
-
     int nb_noeuds = get_nb_noeuds(list);
     while (nb_noeuds > 1)
     {
         list = fuse_matrice_upgma(entries, list, matrice_distance);
         nb_noeuds = get_nb_noeuds(list);
     }
-
     Arbre a;
     a.tete = list->head->data;
 
@@ -406,13 +428,13 @@ Main : Procedure qui calcule les S de la matrice de distance donnee en parametre
 void calcul_S(int entries, int nb_noeuds, float S[nb_noeuds], float matrice[][entries])
 {
     // TODO
-    for (int i = 0; i < entries; i++)
+    for (int i = 0; i < nb_noeuds; i++)
     {
-        for (int j = 0; j < entries; j++)
+        for (int j = 0; j < nb_noeuds; j++)
         {
             S[i] += matrice[j][i];
         }
-        S[i] /= (entries - 2);
+        S[i] /= (nb_noeuds - 2);
     }
 }
 
@@ -430,15 +452,15 @@ void calcule_pair_Mij(int entries, int nb_noeuds, float S[nb_noeuds], float matr
 {
     // TODO
     // on va stocker les Mij dans une nouvelle matrice
-    float new_matrix_pair[entries][entries];
-    for (int i = 0; i < entries; i++)
+    float new_matrix_pair[nb_noeuds][nb_noeuds];
+    for (int i = 0; i < nb_noeuds; i++)
     {
-        for (int j = 0; j < entries; j++)
+        for (int j = 0; j < nb_noeuds; j++)
         {
             new_matrix_pair[i][j] = matrice[i][j] - S[i] - S[j];
         }
     }
-
+    //on trouve le plus peti Mij et on extrait sa valeur et i et j
     find_min_index_distance_matrix(entries, nb_noeuds, new_matrix_pair, min_val, i_min, j_min);
 }
 
@@ -452,13 +474,45 @@ Main : Fonction qui effectue une etape de l'algorithme de Neighbor Joining et qu
 */
 List_Noeuds *fuse_matrice_NJ(int entries, List_Noeuds *list, float matrice_distance[][entries])
 {
-    // TODO
     float min;
     int i_min, j_min;
-
+    int nb_noeuds = get_nb_noeuds(list);
+    //on calcule S
+    float S[nb_noeuds];
+    calcul_S(entries,nb_noeuds,S,matrice_distance);
+    //on trouve le plus petit Mij
+    calcule_pair_Mij(entries,nb_noeuds,S,matrice_distance,&min,&i_min,&j_min);
+    
     find_min_index_distance_matrix(entries, get_nb_noeuds(list), matrice_distance, &min, &i_min, &j_min);
-    // TODO trouver un moyen de gérer la matrice de distance
+    nb_noeuds--;
+    //on calcule la nouvelle matricce de distance
+    float new_matrix[nb_noeuds][nb_noeuds];
+    set_copy(nb_noeuds, new_matrix, matrice_distance);
 
+    int s = 0; //compteur pour les lignes de l'ancienne matrice
+    for (int i = 0; i < nb_noeuds; i++) {
+        int t = 0; //compteur pour les colonnes de l'ancienne matrice
+        for (int j = 0; j < i; j++) {
+            while(t==j_min || t==i_min){ 
+                t++;
+            }
+            while(s==i_min || s==j_min){
+                s++;
+            }
+
+            if (j==0){
+                new_matrix[i][0] =matrice_distance[i_min][s]+matrice_distance[j_min][s]-matrice_distance[i_min][j_min];
+            }
+            new_matrix[i][j] = matrice_distance[s][t];
+            t++;
+        }
+        s++;
+    }
+
+    // on copie dans l'ancienne matrice pour gerer les pointeurs
+    print_matrix_float(nb_noeuds,nb_noeuds,new_matrix);
+
+    //on creer un noeuds qui joint les i et j noeuds
     return group_together(list, i_min, j_min);
 }
 
@@ -478,7 +532,6 @@ Arbre Neighbor_Joining(int entries, List_Noeuds *list, float matrice_distance[][
         list = fuse_matrice_NJ(entries, list, matrice_distance);
         nb_noeuds = get_nb_noeuds(list);
     }
-
     Arbre a;
     a.tete = list->head->data;
     return a;
@@ -534,4 +587,5 @@ void show_tree(char *file_aligne, char Algorithme)
         a = Neighbor_Joining(nb_entries, &list, matrice_distance);
     }
     afficher_arbre_plat(&a);
+    new_affichage(&a);
 }
