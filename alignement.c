@@ -277,7 +277,7 @@ void needleman_wunsch(Sequence seq1, Sequence seq2, char *alignement1, char *ali
         }
 
     }
-    // on inverse les alignements a la fin car on les ecrits en partant de la fin
+    // on inverse les alignements à la fin car on les ecrits en partant de la fin
     reverse_string(alignement1);
     reverse_string(alignement2);
 }
