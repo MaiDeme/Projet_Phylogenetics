@@ -13,8 +13,8 @@ int main() {
     int SEQUENCES = 1;
     int ALIGNEMENT = 1;
     int MATRICE_DISTANCE = 1;
-    int UPGMA = 0;
-    int NJ = 0;
+    int UPGMA = 1;
+    int NJ = 1;
 
     char* file = "cat_dna.fasta";
     char* file_aligne = "cat_dna_aligne.fasta";
@@ -86,9 +86,4 @@ int main() {
         printf("----------------\n");
         show_tree(file_aligne, 'N');
     }
-
-
-
-
-
 }
