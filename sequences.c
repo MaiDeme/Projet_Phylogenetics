@@ -99,7 +99,6 @@ void affiche_sequence(Sequence *sequence)
 {
     printf("\t* ID : %s\n", sequence->ID);
     printf("\t* Sequence : %s\n", sequence->seq);
-    // DONE
 }
 
 /*-------------------------------
@@ -174,6 +173,7 @@ Main : Fonction qui prend le code ainsi qu'une position start, elle va chercher 
 */
 int extract_next_sequence(char *code, int start, Sequence *sequence)
 {
+    //on initialise empty string
     char seq[seq_MAX_LENGTH];
     set_empty_string(seq);
     char ID[ID_MAX_LENGTH];
@@ -194,7 +194,7 @@ int extract_next_sequence(char *code, int start, Sequence *sequence)
     }
     i++;
 
-    while (code[i] != '>' && code[i] != '\0')
+    while (code[i] != '>' && code[i] != '\0') //on extrait la séquence
     {
         if (code[i] != '\n')
         {
@@ -204,7 +204,7 @@ int extract_next_sequence(char *code, int start, Sequence *sequence)
     }
     set_sequence(sequence, ID, seq);
 
-    if (code[i] == '\0')
+    if (code[i] == '\0') //si on arrive a la fin des sequences 
     {
         return -1;
     }
@@ -212,7 +212,6 @@ int extract_next_sequence(char *code, int start, Sequence *sequence)
     {
         return i - 1;
     }
-    // DONE
 }
 
 /*
@@ -222,15 +221,15 @@ Main : Fonction qui lit un fichier, remplit la liste avec les sequences trouvees
 */
 void parse_file(char *address, Sequence tab_sequences[])
 {
+    //initialise les variables
     char *data = readFile(address);
     int nseq_ = get_number_entries(address);
     int start = 0;
 
-    for (int i = 0; i < nseq_; i++)
+    for (int i = 0; i < nseq_; i++) // on extrait chaque séquences
     {
         start = extract_next_sequence(data, start, &tab_sequences[i]);
     }
-    // TODO
 }
 
 /*
