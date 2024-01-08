@@ -6,7 +6,7 @@
 2. Clonez ce dépôt sur votre machine locale.
 
     ```bash
-    git clone https://github.com/MaiDeme/Projet_Phylogenetics
+    git clone https://github.com/MaiDeme/Projet_Phylogenetics.git
     ```
 
 3. Accédez au répertoire du projet.
