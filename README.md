@@ -1,5 +1,7 @@
 # Projet_Phylogenetics
 
+L'affichage des arbres fonctionne mais l'algorithme de construction ne semblent pas fonctionner.
+
 ## Installation
 
 1. Assurez-vous d'avoir `make` installé sur votre système.
