@@ -1,4 +1,5 @@
 # Projet_Phylogenetics
+Projet de fin de semestre du M1 BIBS.
 
 L'affichage des arbres fonctionne mais l'algorithme de construction ne semblent pas fonctionner.
 
